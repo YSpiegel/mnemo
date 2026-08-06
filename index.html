@@ -1,174 +1,19 @@
-<div id="mnemo-app">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
-
-    #mnemo-app {
-      --mnemo-blue: #153d78;
-      --mnemo-blue-deep: #0c2851;
-      --mnemo-blue-soft: #e9f0fb;
-      --mnemo-cream: #faf6ec;
-      --mnemo-paper: #fffdf8;
-      --mnemo-orange: #f28b4b;
-      --mnemo-orange-soft: #fff0e6;
-      --mnemo-ink: #182a45;
-      --mnemo-muted: #6e7c90;
-      --mnemo-line: #dce4ef;
-      min-height: 100vh;
-      color: var(--mnemo-ink);
-      background: var(--mnemo-cream);
-      font-family: 'DM Sans', system-ui, sans-serif;
-      font-size: 15px;
-      line-height: 1.45;
-    }
-    #mnemo-app * { box-sizing: border-box; }
-    #mnemo-app button, #mnemo-app input, #mnemo-app textarea { font: inherit; }
-    #mnemo-app button { cursor: pointer; }
-    .mnemo-shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
-    .mnemo-sidebar { background: var(--mnemo-blue); color: #fff; padding: 28px 20px; display: flex; flex-direction: column; gap: 38px; }
-    .mnemo-brand { display: flex; align-items: center; gap: 10px; color: #fff; font-family: Fraunces, Georgia, serif; font-size: 25px; letter-spacing: -.03em; }
-    .mnemo-brand-mark { width: 31px; height: 31px; border-radius: 10px 10px 10px 3px; background: var(--mnemo-orange); transform: rotate(-10deg); position: relative; }
-    .mnemo-brand-mark:after { content: ''; position: absolute; width: 7px; height: 7px; background: #fff; border-radius: 50%; top: 9px; left: 8px; box-shadow: 11px 5px 0 #fff; }
-    .mnemo-space-switcher { padding: 13px; border: 1px solid rgba(255,255,255,.2); border-radius: 16px; background: rgba(255,255,255,.08); }
-    .mnemo-kicker { color: #9fb7db; text-transform: uppercase; font-size: 10px; font-weight: 500; letter-spacing: .15em; }
-    .mnemo-space-name { margin-top: 5px; font-family: Fraunces, Georgia, serif; font-size: 17px; }
-    .mnemo-nav { display: grid; gap: 6px; }
-    .mnemo-nav button { border: 0; color: #bed0ed; background: transparent; padding: 11px 13px; border-radius: 12px; text-align: left; display: flex; align-items: center; gap: 11px; }
-    .mnemo-nav button:hover, .mnemo-nav button.active { color: #fff; background: rgba(255,255,255,.12); }
-    .mnemo-nav svg { width: 17px; height: 17px; }
-    .mnemo-user { margin-top: auto; display: flex; gap: 10px; align-items: center; border-top: 1px solid rgba(255,255,255,.15); padding-top: 20px; }
-    .mnemo-avatar { width: 35px; height: 35px; border-radius: 50%; display: grid; place-items: center; background: #c9d8f0; color: var(--mnemo-blue); font-weight: 500; }
-    .mnemo-user small { color: #a9bfdf; display: block; font-size: 12px; }
-    .mnemo-main { padding: 40px clamp(22px, 5vw, 72px); max-width: 1400px; width: 100%; }
-    .mnemo-topbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 40px; }
-    .mnemo-topbar p { color: var(--mnemo-muted); margin: 5px 0 0; }
-    .mnemo-h1, .mnemo-h2 { font-family: Fraunces, Georgia, serif; font-weight: 500; letter-spacing: -.04em; color: var(--mnemo-blue-deep); }
-    .mnemo-h1 { font-size: clamp(28px, 4vw, 40px); margin: 0; }
-    .mnemo-h2 { font-size: 23px; margin: 0; }
-    .mnemo-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .mnemo-btn { border: 0; border-radius: 12px; padding: 11px 16px; color: var(--mnemo-blue); background: transparent; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
-    .mnemo-btn:hover { background: var(--mnemo-blue-soft); }
-    .mnemo-btn.primary { background: var(--mnemo-blue); color: #fff; box-shadow: 0 8px 16px rgba(21,61,120,.16); }
-    .mnemo-btn.primary:hover { background: var(--mnemo-blue-deep); }
-    .mnemo-btn.orange { background: var(--mnemo-orange); color: #fff; }
-    .mnemo-btn.orange:hover { filter: brightness(.96); }
-    .mnemo-btn svg { width: 16px; height: 16px; }
-    .mnemo-hero { background: var(--mnemo-blue); color: #fff; border-radius: 24px; padding: 27px 30px; display: grid; grid-template-columns: 1.3fr .7fr; gap: 28px; overflow: hidden; position: relative; margin-bottom: 32px; }
-    .mnemo-hero:after { content: '✦'; position: absolute; right: 26%; bottom: -32px; color: var(--mnemo-orange); font-size: 130px; opacity: .8; transform: rotate(18deg); }
-    .mnemo-hero .mnemo-kicker { color: #b5c9e7; }
-    .mnemo-hero h2 { font-family: Fraunces, Georgia, serif; font-size: 27px; font-weight: 500; margin: 6px 0 5px; }
-    .mnemo-hero p { color: #c5d4eb; margin: 0 0 20px; max-width: 500px; }
-    .mnemo-progress-wrap { align-self: center; z-index: 1; }
-    .mnemo-progress-label { display:flex; justify-content: space-between; color: #c5d4eb; font-size: 12px; margin-bottom: 8px; }
-    .mnemo-progress { height: 8px; background: rgba(255,255,255,.16); border-radius: 99px; overflow: hidden; }
-    .mnemo-progress span { display: block; height: 100%; width: 68%; background: var(--mnemo-orange); border-radius: inherit; }
-    .mnemo-section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 13px; }
-    .mnemo-section-head a { color: var(--mnemo-blue); font-size: 13px; font-weight: 500; text-decoration: none; }
-    .mnemo-section-head a:hover { text-decoration: underline; }
-    .mnemo-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-    .mnemo-mini-card { background: var(--mnemo-paper); border: 1px solid var(--mnemo-line); border-radius: 18px; padding: 18px; min-height: 165px; display: flex; flex-direction: column; justify-content: space-between; transition: transform .2s ease, box-shadow .2s ease; }
-    .mnemo-mini-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(26,54,91,.08); }
-    .mnemo-mini-card .mnemo-card-top { display: flex; justify-content: space-between; align-items: center; }
-    .mnemo-tag { color: var(--mnemo-orange); background: var(--mnemo-orange-soft); padding: 5px 8px; border-radius: 8px; font-size: 11px; }
-    .mnemo-dots { color: var(--mnemo-muted); border: 0; background: transparent; font-size: 20px; line-height: 1; }
-    .mnemo-term { font-family: Fraunces, Georgia, serif; font-size: 22px; color: var(--mnemo-blue-deep); }
-    .mnemo-meaning { color: var(--mnemo-muted); font-size: 13px; }
-    .mnemo-card-footer { display: flex; justify-content: space-between; color: var(--mnemo-muted); font-size: 11px; }
-    .mnemo-study { display: none; }
-    .mnemo-study.is-visible { display: block; }
-    .mnemo-dashboard.is-hidden { display: none; }
-    .mnemo-study-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
-    .mnemo-study-stage { min-height: 530px; display: grid; place-items: center; padding: 12px 0 26px; }
-    .mnemo-flip-wrap { width: min(580px, 100%); perspective: 1600px; }
-    .mnemo-flip-card { min-height: 380px; position: relative; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.2,.7,.2,1); }
-    .mnemo-flip-card.flipped { transform: rotateY(180deg); }
-    .mnemo-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 28px; padding: 37px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 24px 60px rgba(21,61,120,.16); }
-    .mnemo-front { background: var(--mnemo-blue); color: #fff; }
-    .mnemo-back { background: var(--mnemo-paper); color: var(--mnemo-ink); transform: rotateY(180deg); border: 1px solid var(--mnemo-line); }
-    .mnemo-face:before { content: '✦'; font-size: 38px; color: var(--mnemo-orange); position: absolute; right: 32px; top: 25px; }
-    .mnemo-face .mnemo-kicker { color: #b9cce8; }
-    .mnemo-back .mnemo-kicker { color: var(--mnemo-orange); }
-    .mnemo-big-word { font-family: Fraunces, Georgia, serif; font-size: clamp(44px, 9vw, 72px); line-height: 1; letter-spacing: -.06em; margin: auto 0 8px; }
-    .mnemo-pronounce { color: #bfd0e9; font-size: 15px; }
-    .mnemo-back .mnemo-pronounce { color: var(--mnemo-muted); }
-    .mnemo-reveal { color: #c3d3e9; font-size: 13px; }
-    .mnemo-back .mnemo-reveal { color: var(--mnemo-muted); }
-    .mnemo-reveal-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 28px; }
-    .mnemo-reveal-field { border-top: 1px solid var(--mnemo-line); padding-top: 18px; margin-top: 16px; }
-    .mnemo-reveal-field strong { font-family: Fraunces, Georgia, serif; font-size: 29px; color: var(--mnemo-blue-deep); font-weight: 500; display: block; margin-top: 4px; }
-    .mnemo-study-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-    .mnemo-breadcrumb { color: var(--mnemo-muted); border: 0; background: transparent; font-size: 13px; padding: 7px 0; }
-    .mnemo-modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(12,40,81,.42); align-items: center; justify-content: center; padding: 20px; z-index: 10; }
-    .mnemo-modal-backdrop.is-visible { display: flex; }
-    .mnemo-modal { background: var(--mnemo-paper); border-radius: 22px; max-width: 440px; width: 100%; padding: 27px; box-shadow: 0 24px 80px rgba(12,40,81,.25); }
-    .mnemo-modal h2 { margin: 0 0 7px; font-family: Fraunces, Georgia, serif; font-weight: 500; color: var(--mnemo-blue-deep); }
-    .mnemo-modal p { color: var(--mnemo-muted); margin: 0 0 20px; }
-    .mnemo-code { background: var(--mnemo-blue-soft); color: var(--mnemo-blue); letter-spacing: .15em; font-size: 23px; padding: 15px; text-align: center; border-radius: 13px; margin-bottom: 17px; }
-    .mnemo-modal-actions { display:flex; justify-content:flex-end; gap: 8px; }
-    @media (max-width: 860px) { .mnemo-shell { grid-template-columns: 1fr; } .mnemo-sidebar { padding: 18px 20px; gap: 20px; } .mnemo-nav { grid-template-columns: repeat(3, 1fr); } .mnemo-user { display:none; } .mnemo-main { padding: 28px 20px 50px; } }
-    @media (max-width: 620px) { .mnemo-topbar { align-items: flex-start; flex-direction: column; margin-bottom: 25px; } .mnemo-hero { grid-template-columns: 1fr; padding: 22px; } .mnemo-cards { grid-template-columns: 1fr; } .mnemo-nav button { justify-content:center; padding: 9px 4px; font-size: 12px; } .mnemo-nav button span { display:none; } .mnemo-face { padding: 25px; } .mnemo-flip-card { min-height: 355px; } }
-    @media (prefers-reduced-motion: reduce) { .mnemo-flip-card, .mnemo-mini-card { transition: none; } }
-  </style>
-
-  <div class="mnemo-shell">
-    <aside class="mnemo-sidebar">
-      <div class="mnemo-brand"><span class="mnemo-brand-mark" aria-hidden="true"></span>mnemo</div>
-      <div class="mnemo-space-switcher"><div class="mnemo-kicker">Current space</div><div class="mnemo-space-name">Farsi Foundations⌄</div></div>
-      <nav class="mnemo-nav" aria-label="Main navigation">
-        <button class="active" data-view="dashboard"><i data-lucide="layout-grid" aria-hidden="true"></i><span>Overview</span></button>
-        <button data-view="cards"><i data-lucide="layers-3" aria-hidden="true"></i><span>Cards</span></button>
-        <button data-view="study"><i data-lucide="sparkles" aria-hidden="true"></i><span>Study</span></button>
-      </nav>
-      <div class="mnemo-user"><div class="mnemo-avatar">AS</div><div><div>Alex Smith</div><small>Personal account</small></div></div>
-    </aside>
-
-    <main class="mnemo-main">
-      <section class="mnemo-dashboard" id="mnemo-dashboard-view">
-        <div class="mnemo-topbar"><div><div class="mnemo-kicker">Tuesday, August 6</div><h1 class="mnemo-h1">Keep the thread going.</h1><p>Small connections become lasting memory.</p></div><div class="mnemo-actions"><button class="mnemo-btn" id="invite-open"><i data-lucide="user-plus" aria-hidden="true"></i>Invite</button><button class="mnemo-btn primary" id="add-card"><i data-lucide="plus" aria-hidden="true"></i>Add card</button></div></div>
-        <div class="mnemo-hero"><div><div class="mnemo-kicker">Your next session</div><h2>Farsi Foundations</h2><p>Continue with 12 cards waiting for a first look.</p><button class="mnemo-btn orange" data-view="study">Start studying <i data-lucide="arrow-up-right" aria-hidden="true"></i></button></div><div class="mnemo-progress-wrap"><div class="mnemo-progress-label"><span>Weekly rhythm</span><span>4 / 6 sessions</span></div><div class="mnemo-progress"><span></span></div></div></div>
-        <div class="mnemo-section-head"><h2 class="mnemo-h2">Recently added</h2><a href="#" id="view-all">View all cards →</a></div>
-        <div class="mnemo-cards" id="mnemo-card-grid">
-          <article class="mnemo-mini-card"><div class="mnemo-card-top"><span class="mnemo-tag">New</span><button class="mnemo-dots" aria-label="More options">•••</button></div><div><div class="mnemo-term">ありがとう</div><div class="mnemo-meaning">arigatou · thank you</div></div><div class="mnemo-card-footer"><span>Alex added</span><span>2 fields</span></div></article>
-          <article class="mnemo-mini-card"><div class="mnemo-card-top"><span class="mnemo-tag">New</span><button class="mnemo-dots" aria-label="More options">•••</button></div><div><div class="mnemo-term">دوست</div><div class="mnemo-meaning">dust · friend</div></div><div class="mnemo-card-footer"><span>Maya added</span><span>4 fields</span></div></article>
-          <article class="mnemo-mini-card"><div class="mnemo-card-top"><span class="mnemo-tag">Practise</span><button class="mnemo-dots" aria-label="More options">•••</button></div><div><div class="mnemo-term">کتاب</div><div class="mnemo-meaning">ketâb · book</div></div><div class="mnemo-card-footer"><span>Omar added</span><span>4 fields</span></div></article>
-        </div>
-      </section>
-
-      <section class="mnemo-study" id="mnemo-study-view" aria-live="polite">
-        <div class="mnemo-study-head"><button class="mnemo-breadcrumb" data-view="dashboard">← Back to overview</button><div class="mnemo-kicker">Farsi Foundations · Card 04 / 12</div></div>
-        <div class="mnemo-study-stage"><div class="mnemo-flip-wrap"><div class="mnemo-flip-card" id="mnemo-flip-card"><div class="mnemo-face mnemo-front"><div class="mnemo-kicker">Farsi · field 1 of 4</div><div><div class="mnemo-big-word">دوست</div><div class="mnemo-pronounce">dust</div></div><div class="mnemo-reveal">Tap reveal to uncover the next memory cue</div></div><div class="mnemo-face mnemo-back"><div class="mnemo-kicker">Meaning · field 2 of 4</div><div class="mnemo-reveal-field"><div class="mnemo-kicker">English</div><strong>friend</strong></div><div class="mnemo-reveal-row"><span class="mnemo-reveal">A familiar word for someone close.</span><button class="mnemo-btn primary" id="reveal-next">Reveal next <i data-lucide="chevron-right" aria-hidden="true"></i></button></div></div></div></div></div>
-        <div class="mnemo-study-controls"><button class="mnemo-btn" id="study-prev"><i data-lucide="arrow-left" aria-hidden="true"></i>Previous</button><button class="mnemo-btn primary" id="study-reveal">Reveal next <i data-lucide="scan" aria-hidden="true"></i></button><button class="mnemo-btn" id="study-next">Next card <i data-lucide="arrow-right" aria-hidden="true"></i></button></div>
-      </section>
-    </main>
-  </div>
-
-  <div class="mnemo-modal-backdrop" id="mnemo-modal" role="dialog" aria-modal="true" aria-labelledby="mnemo-modal-title"><div class="mnemo-modal"><h2 id="mnemo-modal-title">Invite a learning partner</h2><p>Share this code with someone you trust. They’ll get full editing access to this space.</p><div class="mnemo-code">DUST · 4827</div><div class="mnemo-modal-actions"><button class="mnemo-btn" id="invite-close">Close</button><button class="mnemo-btn primary" id="copy-code">Copy code</button></div></div></div>
-
-  <script>
-    (() => {
-      const root = document.getElementById('mnemo-app');
-      const dashboard = root.querySelector('#mnemo-dashboard-view');
-      const study = root.querySelector('#mnemo-study-view');
-      const flipCard = root.querySelector('#mnemo-flip-card');
-      const modal = root.querySelector('#mnemo-modal');
-      const showView = (view) => {
-        const isStudy = view === 'study';
-        dashboard.classList.toggle('is-hidden', isStudy);
-        study.classList.toggle('is-visible', isStudy);
-        root.querySelectorAll('[data-view]').forEach((button) => button.classList.toggle('active', button.dataset.view === (isStudy ? 'study' : 'dashboard')));
-        if (isStudy) flipCard.classList.remove('flipped');
-      };
-      root.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', (event) => { event.preventDefault(); showView(button.dataset.view); }));
-      root.querySelector('#invite-open').addEventListener('click', () => modal.classList.add('is-visible'));
-      root.querySelector('#invite-close').addEventListener('click', () => modal.classList.remove('is-visible'));
-      modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('is-visible'); });
-      root.querySelector('#copy-code').addEventListener('click', async (event) => { const button = event.currentTarget; try { await navigator.clipboard.writeText('DUST-4827'); button.textContent = 'Copied ✓'; setTimeout(() => { button.textContent = 'Copy code'; }, 1500); } catch (error) { button.textContent = 'Code: DUST-4827'; } });
-      const reveal = () => flipCard.classList.add('flipped');
-      root.querySelector('#study-reveal').addEventListener('click', reveal);
-      root.querySelector('#reveal-next').addEventListener('click', reveal);
-      root.querySelector('#study-prev').addEventListener('click', () => flipCard.classList.remove('flipped'));
-      root.querySelector('#study-next').addEventListener('click', () => { flipCard.classList.remove('flipped'); });
-      root.querySelector('#add-card').addEventListener('click', () => alert('Card composer coming next — this mockup is focused on the shared study flow.'));
-      if (window.lucide) window.lucide.createIcons();
-    })();
-  </script>
-</div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#153d78" />
+    <title>Mnemo — Learn by connection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="app" aria-live="polite"></main>
+    <div id="modal-root"></div>
+    <div id="toast-root" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
